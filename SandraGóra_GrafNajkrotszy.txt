@@ -1,0 +1,124 @@
+#include <iostream>
+
+using namespace std;
+
+struct node
+{
+    node* next;
+    int nrDocelowy, waga;
+};
+
+int main()
+{
+    node** Graf;
+    node *pom, *rw;
+    int Krawedzie, Wierzcholki, startowy,
+        waga, poczatek, koniec, Wskaznik;
+    int *KosztyDojscia, *Poprzednicy, *Stos;
+    int j, u;
+    bool *Zbiory;
+
+    cin >> startowy >> Wierzcholki >> Krawedzie;
+
+    KosztyDojscia = new int[Wierzcholki];
+    Poprzednicy = new int[Wierzcholki];
+    Zbiory = new bool[Wierzcholki];
+    Graf = new node * [Wierzcholki];
+    Stos = new int[Wierzcholki];
+    Wskaznik = 0;
+
+    for (int i = 0; i < Wierzcholki; i++)
+    {
+        KosztyDojscia[i] = 99999;
+        Poprzednicy[i] = -1;
+        Zbiory[i] = false;
+        Graf[i] = NULL;
+    }
+
+    for (int i = 0; i < Krawedzie; i++)
+    {
+        cin >> poczatek >> koniec >> waga;
+        pom = new node;
+        pom->nrDocelowy = koniec;
+        pom->waga = waga;
+        pom->next = Graf[poczatek];
+        Graf[poczatek] = pom;
+    }
+
+    cout << endl;
+
+    KosztyDojscia[startowy] = 0;
+
+    for (int i = 0; i < Wierzcholki; i++)
+    {
+        for (j = 0; Zbiory[j]; j++);
+        for (u = j++; j < Wierzcholki; j++)
+            if (!Zbiory[j] && (KosztyDojscia[j] < KosztyDojscia[u]))
+                u = j;
+
+        Zbiory[u] = true;
+
+        for (pom = Graf[u]; pom; pom = pom->next)
+            if (!Zbiory[pom->nrDocelowy] && (KosztyDojscia[pom->nrDocelowy] > KosztyDojscia[u] + pom->waga))
+            {
+                KosztyDojscia[pom->nrDocelowy] = KosztyDojscia[u] + pom->waga;
+                Poprzednicy[pom->nrDocelowy] = u;
+            }
+    }
+
+    for (int i = 0; i < Wierzcholki; i++)
+    {
+        switch (i)
+        {
+        case 0: cout << "WILNO: "; break;
+        case 1: cout << "KOWNO: "; break;
+        case 2: cout << "MARIAMPOL: "; break;
+        case 3: cout << "UCINA: "; break;
+        case 4: cout << "PONIEWIEZ: "; break;
+        case 5: cout << "TAUROGI: "; break;
+        case 6: cout << "SZAWLE: "; break;
+        case 7: cout << "KLAJPEDA: "; break;
+        case 8: cout << "BUTYNGA: "; break;
+        }
+        
+        for (j = i; j > -1; j = Poprzednicy[j])
+            Stos[Wskaznik++] = j;
+
+        while (Wskaznik)
+        {
+            switch (Stos[--Wskaznik])
+            {
+            case 0: cout << "Wilno, "; break;
+            case 1: cout << "Kowno, "; break;
+            case 2: cout << "Mariampol, "; break;
+            case 3: cout << "Uciana, "; break;
+            case 4: cout << "Poniewiez, "; break;
+            case 5: cout << "Taurogi, "; break;
+            case 6: cout << "Szawle, "; break;
+            case 7: cout << "Klajpeda, "; break;
+            case 8: cout << "Butynga, "; break;
+            }
+        }     
+        cout << endl;
+        cout << "koszt:" << KosztyDojscia[i] << endl;
+    }
+
+    delete[] KosztyDojscia;
+    delete[] Poprzednicy;
+    delete[] Zbiory;
+    delete[] Stos;
+
+    for (int i = 0; i < Wierzcholki; i++)
+    {
+        pom = Graf[i];
+        while (pom)
+        {
+            rw = pom;
+            pom = pom->next;
+            delete rw;
+        }
+    }
+
+    delete[] Graf;
+    return 0;
+	}
